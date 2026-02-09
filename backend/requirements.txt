@@ -12,3 +12,4 @@ langchain-groq>=0.1.0
 pypdf
 python-multipart
 slowapi>=0.1.9
+supabase>=2.3.0
