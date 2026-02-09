@@ -6,6 +6,9 @@ interface ProgressStats {
     streakDays: number
     activeRoadmaps: number
     totalXP: number
+    weeklyProgress?: number | string
+    levelTitle?: string
+    streakMessage?: string
 }
 
 export function ProgressTracker({ stats }: { stats: ProgressStats }) {
@@ -21,7 +24,7 @@ export function ProgressTracker({ stats }: { stats: ProgressStats }) {
                 <CardContent>
                     <div className="text-2xl font-bold text-neutral-900">{stats.completedLessons}</div>
                     <p className="text-xs text-neutral-500">
-                        +2 this week
+                        +{stats.weeklyProgress || 0} this week
                     </p>
                 </CardContent>
             </Card>
@@ -36,7 +39,7 @@ export function ProgressTracker({ stats }: { stats: ProgressStats }) {
                 <CardContent>
                     <div className="text-2xl font-bold text-neutral-900">{stats.streakDays}</div>
                     <p className="text-xs text-neutral-500">
-                        Keep it up!
+                        {stats.streakMessage || "Start learning!"}
                     </p>
                 </CardContent>
             </Card>
@@ -51,7 +54,7 @@ export function ProgressTracker({ stats }: { stats: ProgressStats }) {
                 <CardContent>
                     <div className="text-2xl font-bold text-neutral-900">{stats.totalXP}</div>
                     <p className="text-xs text-neutral-500">
-                        Lvl 5 Developer
+                        {stats.levelTitle || "Lvl 1 Novice"}
                     </p>
                 </CardContent>
             </Card>

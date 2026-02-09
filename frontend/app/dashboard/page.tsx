@@ -73,7 +73,10 @@ export default function DashboardPage() {
                     completedLessons: stats?.skills_mastered || 0,
                     streakDays: stats?.streak_days || 0,
                     activeRoadmaps: roadmaps.length,
-                    totalXP: stats?.total_xp || 0
+                    totalXP: stats?.total_xp || 0,
+                    weeklyProgress: stats?.weekly_completed || 0,
+                    levelTitle: stats?.level_title,
+                    streakMessage: stats?.message_streak
                 }}
             />
 

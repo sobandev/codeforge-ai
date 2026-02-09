@@ -17,6 +17,7 @@ class RoadmapProgress(BaseModel):
     total_topics: int
     completed_topics: int
 
+
 class UserStats(BaseModel):
     items_created: int
     lessons_completed: int
@@ -26,6 +27,9 @@ class UserStats(BaseModel):
     total_xp: int
     recent_activity: List[RoadmapProgress]
     badges: List[str]
+    weekly_completed: int
+    level_title: str
+    message_streak: str
 
 @router.get("/stats", response_model=UserStats)
 async def get_user_stats(
@@ -39,6 +43,15 @@ async def get_user_stats(
     total_completed_lessons = 0
     recent_activity = []
     badges = []
+
+    # Weekly Progress Logic
+    import datetime
+    one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+    weekly_completed = db.query(TopicProgress).filter(
+        TopicProgress.user_id == user.id,
+        TopicProgress.is_completed == True,
+        TopicProgress.created_at >= one_week_ago
+    ).count()
 
     # Calculate progress for each roadmap
     for roadmap in roadmaps:
@@ -93,26 +106,25 @@ async def get_user_stats(
     skills_mastered = total_completed_lessons # 1 lesson = 1 skill for now
     
     # Calculate XP
-    # Calculate XP
     # 1. Lesson XP
     lesson_xp = total_completed_lessons * 150 
     
     # 2. Challenge XP (from DB)
-    # We use the stored total_xp from the User model which we update when challenges are solved
-    # But to be safe, we can recalculate or just trust the user.total_xp if it includes everything.
-    # For now, let's assume user.total_xp tracks *Challenge* XP and maybe other bonuses, 
-    # and we add it to the Lesson XP which is calculated dynamically.
-    
-    # Actually, a better approach for this MVP:
-    # user.total_xp will store ONLY Challenge XP (and manual bonuses).
-    # Lesson XP is always calculated on the fly.
-    
     challenge_xp = user.total_xp if user.total_xp else 0
     total_xp = lesson_xp + challenge_xp
 
-    # Calculate Streak (Placeholder)
-    # in a real app, query distinct dates from TopicProgress where is_completed=True
+    # Level Calculation
+    # Level 1 = 0-1000, Level 2 = 1001-2000, etc.
+    level = (total_xp // 1000) + 1
+    level_title = f"Lvl {level} Developer"
+
+    # Calculate Streak (Placeholder logic improved)
+    # Ideally, query distinct dates from TopicProgress where is_completed=True
+    # For now, let's say if they did anything today or yesterday, streak is 1+, else 0.
+    # We will keep the simple logic for now but update the message.
     streak_days = 1 if total_completed_lessons > 0 else 0
+    
+    message_streak = "Keep it up!" if streak_days > 0 else "Start a streak!"
 
     return {
         "items_created": roadmap_count,
@@ -122,5 +134,8 @@ async def get_user_stats(
         "streak_days": streak_days,
         "total_xp": total_xp,
         "recent_activity": recent_activity,
-        "badges": badges
+        "badges": badges,
+        "weekly_completed": weekly_completed,
+        "level_title": level_title,
+        "message_streak": message_streak
     }
