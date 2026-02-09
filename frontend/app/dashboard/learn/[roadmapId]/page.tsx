@@ -50,7 +50,8 @@ export default function LearningStudio() {
         if (!token) return
 
         try {
-            const res = await fetch(`http://localhost:8000/api/v1/learning/progress/${roadmapId}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+            const res = await fetch(`${apiUrl}/api/v1/learning/progress/${roadmapId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }

@@ -50,7 +50,8 @@ export function QuizModal({ isOpen, onClose, topic }: QuizModalProps) {
         setQuizData(null)
 
         try {
-            const response = await fetch(`http://localhost:8000/api/v1/learning/quiz?topic=${encodeURIComponent(topic)}`)
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+            const response = await fetch(`${apiUrl}/api/v1/learning/quiz?topic=${encodeURIComponent(topic)}`)
             if (!response.ok) throw new Error("Failed to load quiz")
             const data = await response.json()
             setQuizData(data)
@@ -181,8 +182,8 @@ export function QuizModal({ isOpen, onClose, topic }: QuizModalProps) {
                                     <div key={index}
                                         onClick={() => !showExplanation && setSelectedOption(index)}
                                         className={`flex items-start space-x-3 rounded-xl border-2 p-4 cursor-pointer transition-all ${selectedOption === index
-                                                ? "border-amber-400 bg-amber-50 shadow-sm"
-                                                : "border-neutral-100 hover:border-neutral-200 hover:bg-neutral-50"
+                                            ? "border-amber-400 bg-amber-50 shadow-sm"
+                                            : "border-neutral-100 hover:border-neutral-200 hover:bg-neutral-50"
                                             } ${showExplanation && option.is_correct ? "!border-green-500 !bg-green-50" : ""
                                             } ${showExplanation && selectedOption === index && !option.is_correct ? "!border-red-500 !bg-red-50" : ""
                                             }`}>
@@ -190,7 +191,7 @@ export function QuizModal({ isOpen, onClose, topic }: QuizModalProps) {
                                             } ${showExplanation && option.is_correct ? "!border-green-600" : ""
                                             } ${showExplanation && selectedOption === index && !option.is_correct ? "!border-red-600" : ""}`}>
                                             {selectedOption === index && <div className={`h-2.5 w-2.5 rounded-full ${showExplanation && option.is_correct ? "bg-green-600" :
-                                                    showExplanation && !option.is_correct ? "bg-red-600" : "bg-amber-500"
+                                                showExplanation && !option.is_correct ? "bg-red-600" : "bg-amber-500"
                                                 }`} />}
                                         </div>
 

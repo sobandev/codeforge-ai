@@ -31,7 +31,8 @@ export default function ProfilePage() {
                 // Fetch stats
                 try {
                     const token = (await supabase.auth.getSession()).data.session?.access_token
-                    const res = await fetch("http://localhost:8000/api/v1/user/stats", {
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                    const res = await fetch(`${apiUrl}/api/v1/user/stats`, {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                     if (res.ok) {
