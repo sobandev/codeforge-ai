@@ -118,7 +118,7 @@ async def get_user_stats(
         "items_created": roadmap_count,
         "lessons_completed": total_completed_lessons,
         "skills_mastered": skills_mastered,
-        "code_challenges": db.query(models.UserChallenge).filter(models.UserChallenge.user_id == user.id).count(),
+        "code_challenges": db.query(UserChallenge).filter(UserChallenge.user_id == user.id).count(),
         "streak_days": streak_days,
         "total_xp": total_xp,
         "recent_activity": recent_activity,
