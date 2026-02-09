@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import User
+from models import User, UserChallenge
 from core.security import get_current_user
 from pydantic import BaseModel
 from typing import List, Optional
@@ -109,9 +109,26 @@ class VerificationResult(BaseModel):
     xp_awarded: int
 
 @router.get("/", response_model=List[dict])
-async def get_challenges():
-    """Returns the list of available challenges."""
-    return CHALLENGES
+async def get_challenges(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    """Returns the list of available challenges with completion status."""
+    # Get completed challenge IDs for this user
+    completed_ids = [
+        c.challenge_id for c in db.query(models.UserChallenge).filter(
+            models.UserChallenge.user_id == user.id
+        ).all()
+    ]
+    
+    # Enhance the static list with 'completed' status
+    enhanced_challenges = []
+    for c in CHALLENGES:
+        c_copy = c.copy()
+        c_copy["completed"] = c["id"] in completed_ids
+        enhanced_challenges.append(c_copy)
+        
+    return enhanced_challenges
 
 @router.get("/{challenge_id}")
 async def get_challenge_detail(challenge_id: str):
@@ -129,7 +146,7 @@ async def verify_solution(
 ):
     """
     Verifies the submitted code using AI.
-    If correct, awards XP to the user.
+    If correct, awards XP to the user and saves record.
     """
     challenge = next((c for c in CHALLENGES if c["id"] == submission.challenge_id), None)
     if not challenge:
@@ -166,59 +183,74 @@ async def verify_solution(
     system_message = "You are a precise code verification engine. Output valid JSON only."
     
     try:
+        # Check if already completed to avoid duplicate XP (optional - allowing replay for now but not XP spam)
+        # For MVP let's just award XP every time or check DB?
+        # Let's check DB to prevent XP farming on the same problem
+        existing_solution = db.query(models.UserChallenge).filter(
+            models.UserChallenge.user_id == user.id,
+            models.UserChallenge.challenge_id == submission.challenge_id
+        ).first()
+
         if not GROQ_API_KEY:
             # Fallback mock for dev without key
             is_correct = "pass" not in submission.code and len(submission.code) > 20
-            return {
-                "is_correct": is_correct,
-                "feedback": "AI key missing. Mock verification: " + ("Success!" if is_correct else "Code looks incomplete."),
-                "xp_awarded": challenge["xp"] if is_correct else 0
-            }
-
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                GROQ_API_URL,
-                headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [
-                        {"role": "system", "content": system_message},
-                        {"role": "user", "content": prompt}
-                    ],
-                    "temperature": 0.1,
-                    "response_format": {"type": "json_object"}
-                },
-                timeout=30.0
-            )
-            
-            if response.status_code != 200:
-                raise HTTPException(status_code=500, detail="AI Verification Service unavailable")
+        else:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    GROQ_API_URL,
+                    headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+                    json={
+                        "model": "llama-3.3-70b-versatile",
+                        "messages": [
+                            {"role": "system", "content": system_message},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.1,
+                        "response_format": {"type": "json_object"}
+                    },
+                    timeout=30.0
+                )
                 
-            result = response.json()
-            ai_content = result["choices"][0]["message"]["content"]
-            
-            # Parse JSON response
-            import json
-            evaluation = json.loads(ai_content)
-            
-            is_correct = evaluation.get("correct", False)
-            feedback = evaluation.get("feedback", "No feedback provided.")
-            
-            xp_awarded = 0
-            if is_correct:
+                if response.status_code != 200:
+                    raise HTTPException(status_code=500, detail="AI Verification Service unavailable")
+                    
+                result = response.json()
+                ai_content = result["choices"][0]["message"]["content"]
+                
+                # Parse JSON response
+                import json
+                evaluation = json.loads(ai_content)
+                
+                is_correct = evaluation.get("correct", False)
+                feedback = evaluation.get("feedback", "No feedback provided.")
+        
+        xp_awarded = 0
+        if is_correct:
+            if not existing_solution:
                 xp_awarded = challenge["xp"]
                 # Award XP to user
-                # Ensure user.total_xp is initialized
                 if user.total_xp is None:
                     user.total_xp = 0
                 user.total_xp += xp_awarded
+                
+                # Record completion
+                new_solution = models.UserChallenge(
+                    user_id=user.id,
+                    challenge_id=submission.challenge_id,
+                    language=submission.language,
+                    code=submission.code,
+                    xp_awarded=xp_awarded
+                )
+                db.add(new_solution)
                 db.commit()
-            
-            return {
-                "is_correct": is_correct,
-                "feedback": feedback,
-                "xp_awarded": xp_awarded
-            }
+            else:
+                feedback += " (Challenge already completed - No new XP awarded)"
+
+        return {
+            "is_correct": is_correct,
+            "feedback": feedback,
+            "xp_awarded": xp_awarded
+        }
 
     except Exception as e:
         print(f"Verification Error: {e}")

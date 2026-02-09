@@ -52,3 +52,14 @@ class Lesson(Base):
     content_markdown = Column(Text)
     estimated_time = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class UserChallenge(Base):
+    __tablename__ = "user_challenges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    challenge_id = Column(String, index=True)
+    language = Column(String)
+    code = Column(Text)
+    completed_at = Column(DateTime, default=datetime.datetime.utcnow)
+    xp_awarded = Column(Integer)

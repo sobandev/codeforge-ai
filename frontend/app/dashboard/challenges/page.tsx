@@ -5,7 +5,7 @@ import { challengesService } from "@/services/challenges"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Code2, Zap } from "lucide-react"
+import { ArrowRight, Code2, Zap, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 
 export default function ChallengesPage() {
@@ -45,13 +45,20 @@ export default function ChallengesPage() {
                         <Card key={challenge.id} className="flex flex-col hover:shadow-md transition-all border-neutral-200">
                             <CardHeader>
                                 <div className="flex justify-between items-start mb-2">
-                                    <Badge variant="outline" className={`
-                                        ${challenge.difficulty === "Easy" ? "text-green-600 bg-green-50 border-green-200" :
-                                            challenge.difficulty === "Medium" ? "text-amber-600 bg-amber-50 border-amber-200" :
-                                                "text-red-600 bg-red-50 border-red-200"}
-                                    `}>
-                                        {challenge.difficulty}
-                                    </Badge>
+                                    <div className="flex gap-2">
+                                        <Badge variant="outline" className={`
+                                            ${challenge.difficulty === "Easy" ? "text-green-600 bg-green-50 border-green-200" :
+                                                challenge.difficulty === "Medium" ? "text-amber-600 bg-amber-50 border-amber-200" :
+                                                    "text-red-600 bg-red-50 border-red-200"}
+                                        `}>
+                                            {challenge.difficulty}
+                                        </Badge>
+                                        {challenge.completed && (
+                                            <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1">
+                                                <CheckCircle2 className="h-3 w-3" /> Solved
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <div className="flex items-center text-xs font-semibold text-amber-600">
                                         <Zap className="h-3 w-3 mr-1" />
                                         {challenge.xp} XP

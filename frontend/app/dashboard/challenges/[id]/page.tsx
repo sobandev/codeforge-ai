@@ -124,7 +124,17 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
             {/* Right Panel: Editor */}
             <div className="w-full md:w-2/3 flex flex-col h-full rounded-xl border border-neutral-200 overflow-hidden shadow-sm bg-white">
                 <div className="bg-neutral-50 px-4 py-3 border-b border-neutral-200 flex justify-between items-center">
-                    <span className="text-sm font-medium text-neutral-600">solutions.py</span>
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-neutral-600">solutions.py</span>
+                        <select
+                            className="text-xs border border-neutral-300 rounded px-2 py-1 bg-white text-neutral-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                            value="python"
+                            onChange={() => { }} // Placeholder for now, can expand later
+                        >
+                            <option value="python">Python</option>
+                            {/* <option value="javascript">JavaScript</option> */}
+                        </select>
+                    </div>
                     <Button
                         size="sm"
                         onClick={handleRun}
