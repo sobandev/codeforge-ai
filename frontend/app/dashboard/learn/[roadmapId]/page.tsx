@@ -32,7 +32,8 @@ export default function LearningStudio() {
     useEffect(() => {
         if (roadmapId) {
             // Fetch Roadmap
-            fetch(`http://localhost:8000/api/v1/roadmap/${roadmapId}`)
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+            fetch(`${apiUrl}/api/v1/roadmap/${roadmapId}`)
                 .then(res => res.json())
                 .then(data => setRoadmap(data))
                 .catch(err => console.error("Failed to fetch roadmap:", err))
@@ -88,7 +89,8 @@ export default function LearningStudio() {
         setCompletedTopics(newSet)
 
         try {
-            await fetch("http://localhost:8000/api/v1/learning/progress", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+            await fetch(`${apiUrl}/api/v1/learning/progress`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -155,7 +157,8 @@ export default function LearningStudio() {
                 return
             }
 
-            const res = await fetch("http://localhost:8000/api/v1/learning/lesson", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+            const res = await fetch(`${apiUrl}/api/v1/learning/lesson`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
