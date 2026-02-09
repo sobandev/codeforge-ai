@@ -86,10 +86,19 @@ async def create_roadmap(
     return db_roadmap
 
 @router.get("/{roadmap_id}", response_model=RoadmapSchema)
-def read_roadmap(roadmap_id: int, db: Session = Depends(get_db)):
+def read_roadmap(
+    roadmap_id: int, 
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
     roadmap = db.query(Roadmap).filter(Roadmap.id == roadmap_id).first()
     if roadmap is None:
         raise HTTPException(status_code=404, detail="Roadmap not found")
+    
+    # Security Check: Ensure the user owns this roadmap
+    if roadmap.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this roadmap")
+        
     return roadmap
 
 from typing import List

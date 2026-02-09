@@ -76,6 +76,13 @@ async def update_progress(
     # Use authenticated user ID
     user_id = user.id
     
+    # Security Check: Ensure roadmap belongs to user
+    roadmap = db.query(models.Roadmap).filter(models.Roadmap.id == update.roadmap_id).first()
+    if not roadmap:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+    if roadmap.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update progress for this roadmap")
+
     progress = db.query(models.TopicProgress).filter(
         models.TopicProgress.user_id == user_id,
         models.TopicProgress.roadmap_id == update.roadmap_id,
@@ -109,6 +116,13 @@ async def get_roadmap_progress(
     """
     user_id = user.id
     
+    # Security Check: Ensure roadmap belongs to user
+    roadmap = db.query(models.Roadmap).filter(models.Roadmap.id == roadmap_id).first()
+    if not roadmap:
+         raise HTTPException(status_code=404, detail="Roadmap not found")
+    if roadmap.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view progress for this roadmap")
+
     progress_records = db.query(models.TopicProgress).filter(
         models.TopicProgress.user_id == user_id,
         models.TopicProgress.roadmap_id == roadmap_id
