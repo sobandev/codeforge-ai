@@ -140,8 +140,8 @@ async def get_challenges(
     """Returns the list of available challenges with completion status."""
     # Get completed challenge IDs for this user
     completed_ids = [
-        c.challenge_id for c in db.query(models.UserChallenge).filter(
-            models.UserChallenge.user_id == user.id
+        c.challenge_id for c in db.query(UserChallenge).filter(
+            UserChallenge.user_id == user.id
         ).all()
     ]
     
@@ -210,9 +210,9 @@ async def verify_solution(
         # Check if already completed to avoid duplicate XP (optional - allowing replay for now but not XP spam)
         # For MVP let's just award XP every time or check DB?
         # Let's check DB to prevent XP farming on the same problem
-        existing_solution = db.query(models.UserChallenge).filter(
-            models.UserChallenge.user_id == user.id,
-            models.UserChallenge.challenge_id == submission.challenge_id
+        existing_solution = db.query(UserChallenge).filter(
+            UserChallenge.user_id == user.id,
+            UserChallenge.challenge_id == submission.challenge_id
         ).first()
 
         if not GROQ_API_KEY:
@@ -258,7 +258,7 @@ async def verify_solution(
                 user.total_xp += xp_awarded
                 
                 # Record completion
-                new_solution = models.UserChallenge(
+                new_solution = UserChallenge(
                     user_id=user.id,
                     challenge_id=submission.challenge_id,
                     language=submission.language,
