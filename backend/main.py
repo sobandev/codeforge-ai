@@ -14,7 +14,7 @@ from slowapi.errors import RateLimitExceeded
 from core.limiter import limiter
 
 # Create database tables
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="CodeForge AI API", version="0.1.0")
 
