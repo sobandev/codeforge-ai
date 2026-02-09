@@ -65,8 +65,8 @@ def generate_roadmap(goal: str, current_skills: str = "", resume_text: str = "")
     5. For each module, provide:
        - A title and brief description.
        - A list of specific topics/sub-skills.
-       - at least 2 FREE resources (YouTube links, official docs, freeCodeCamp, etc.)
-       - at least 1 PAID resource (Udemy, Coursera, books, etc.) if applicable.
+       - at least 2 FREE resources. IMPORTANT: Prefer "Official Documentation" (e.g., React Docs, MDN, Python.org) or highly stable YouTube channels (e.g., Traversy Media, FreeCodeCamp). *DO NOT* use random blog posts or deep links that might change.
+       - at least 1 PAID resource (Udemy/Coursera Course Landing Pages, O'Reilly Books).
        - 1-2 PRACTICAL PROJECTS: Suggest a specific application to build that uses these skills (e.g., "Build a To-Do List", "Create a Weather App").
     
     {format_instructions}

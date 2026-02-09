@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Circle, GraduationCap, BookOpen, Code2 } from "lucide-react"
+import { CheckCircle2, Circle, GraduationCap, BookOpen, Code2, Search } from "lucide-react"
 import Link from "next/link"
 import { QuizModal } from "./quiz-modal"
 import { cn } from "@/lib/utils"
@@ -183,12 +183,23 @@ export function RoadmapDisplay({ data }: { data: RoadmapData }) {
                                                     </span>
                                                     <div className="flex flex-col gap-2">
                                                         {module.paid_resources.map((res, i) => (
-                                                            <a href={res.url} target="_blank" rel="noopener noreferrer" key={i} className="flex items-center gap-2 text-sm text-neutral-600 hover:text-amber-600 transition-colors group/link p-2 rounded-lg hover:bg-neutral-50 border border-transparent hover:border-neutral-100">
-                                                                <div className="p-1 px-2 rounded-md bg-neutral-100 text-[10px] font-bold text-neutral-500 group-hover/link:bg-white group-hover/link:text-amber-500 transition-colors">
-                                                                    {res.type}
-                                                                </div>
-                                                                <span className="truncate flex-1 font-medium">{res.title}</span>
-                                                            </a>
+                                                            <div key={i} className="flex items-center gap-2 w-full">
+                                                                <a href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-neutral-600 hover:text-amber-600 transition-colors group/link p-2 rounded-lg hover:bg-neutral-50 border border-transparent hover:border-neutral-100 flex-1 min-w-0">
+                                                                    <div className="p-1 px-2 rounded-md bg-neutral-100 text-[10px] font-bold text-neutral-500 group-hover/link:bg-white group-hover/link:text-amber-500 transition-colors flex-shrink-0">
+                                                                        {res.type}
+                                                                    </div>
+                                                                    <span className="truncate flex-1 font-medium">{res.title}</span>
+                                                                </a>
+                                                                <a
+                                                                    href={`https://www.google.com/search?q=${encodeURIComponent(res.title + " course")}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="p-2 text-neutral-300 hover:text-neutral-600 transition-colors"
+                                                                    title="Search on Google if link broken"
+                                                                >
+                                                                    <Search className="h-3.5 w-3.5" />
+                                                                </a>
+                                                            </div>
                                                         ))}
                                                     </div>
                                                 </div>
