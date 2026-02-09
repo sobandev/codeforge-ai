@@ -18,6 +18,8 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
     const [result, setResult] = useState<any>(null)
     const [showConfetti, setShowConfetti] = useState(false)
 
+    const [language, setLanguage] = useState("python")
+
     // Unwrap params
     useEffect(() => {
         params.then(unwrapped => setChallengeId(unwrapped.id))
@@ -29,7 +31,13 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
             try {
                 const data = await challengesService.getChallengeById(challengeId)
                 setChallenge(data)
-                setCode(data.starter_code)
+                // Set code based on default language (python) or the first available
+                if (data.starter_code && typeof data.starter_code === 'object') {
+                    setCode(data.starter_code[language] || "")
+                } else {
+                    // Fallback for old structure if any
+                    setCode(data.starter_code || "")
+                }
             } catch (error) {
                 console.error(error)
             }
@@ -37,13 +45,21 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
         fetchChallenge()
     }, [challengeId])
 
+    // Handle language change
+    const handleLanguageChange = (newLang: string) => {
+        setLanguage(newLang)
+        if (challenge?.starter_code && typeof challenge.starter_code === 'object') {
+            setCode(challenge.starter_code[newLang] || "")
+        }
+    }
+
     const handleRun = async () => {
         if (!challengeId) return
         setVerifying(true)
         setResult(null)
 
         try {
-            const res = await challengesService.verifySolution(challengeId, code, "python")
+            const res = await challengesService.verifySolution(challengeId, code, language)
             setResult(res)
             if (res.is_correct) {
                 setShowConfetti(true)
@@ -125,14 +141,14 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
             <div className="w-full md:w-2/3 flex flex-col h-full rounded-xl border border-neutral-200 overflow-hidden shadow-sm bg-white">
                 <div className="bg-neutral-50 px-4 py-3 border-b border-neutral-200 flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-neutral-600">solutions.py</span>
+                        <span className="text-sm font-medium text-neutral-600">solutions.{language === 'python' ? 'py' : 'js'}</span>
                         <select
                             className="text-xs border border-neutral-300 rounded px-2 py-1 bg-white text-neutral-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
-                            value="python"
-                            onChange={() => { }} // Placeholder for now, can expand later
+                            value={language}
+                            onChange={(e) => handleLanguageChange(e.target.value)}
                         >
                             <option value="python">Python</option>
-                            {/* <option value="javascript">JavaScript</option> */}
+                            <option value="javascript">JavaScript</option>
                         </select>
                     </div>
                     <Button
@@ -152,7 +168,7 @@ export default function ChallengeEditorPage({ params }: { params: Promise<{ id: 
                 <div className="flex-1">
                     <Editor
                         height="100%"
-                        defaultLanguage="python"
+                        language={language}
                         value={code}
                         onChange={(value) => setCode(value || "")}
                         theme="light"

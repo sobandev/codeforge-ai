@@ -21,8 +21,11 @@ CHALLENGES = [
         "title": "Reverse a String",
         "difficulty": "Easy",
         "description": "Write a function `reverseString(s)` that takes a string and returns it reversed.",
-        "starter_code": "def reverseString(s):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def reverseString(s):\n    # Your code here\n    pass",
+            "javascript": "function reverseString(s) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 50,
         "test_criteria": "Input: 'hello' -> Output: 'olleh'. Input: 'Racecar' -> Output: 'racecaR'."
     },
@@ -31,8 +34,11 @@ CHALLENGES = [
         "title": "Two Sum",
         "difficulty": "Medium",
         "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.",
-        "starter_code": "def twoSum(nums, target):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def twoSum(nums, target):\n    # Your code here\n    pass",
+            "javascript": "function twoSum(nums, target) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 100,
         "test_criteria": "Input: nums = [2,7,11,15], target = 9 -> Output: [0,1]. Efficiency matters (O(n) preferred)."
     },
@@ -41,8 +47,11 @@ CHALLENGES = [
         "title": "Palindrome Number",
         "difficulty": "Easy",
         "description": "Given an integer `x`, return true if `x` is a palindrome, and false otherwise.",
-        "starter_code": "def isPalindrome(x):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def isPalindrome(x):\n    # Your code here\n    pass",
+            "javascript": "function isPalindrome(x) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 50,
         "test_criteria": "Input: 121 -> True. Input: -121 -> False. Input: 10 -> False."
     },
@@ -51,8 +60,11 @@ CHALLENGES = [
         "title": "FizzBuzz",
         "difficulty": "Easy",
         "description": "Given an integer n, return a string array answer (1-indexed) where: answer[i] == 'FizzBuzz' if i is divisible by 3 and 5. answer[i] == 'Fizz' if i is divisible by 3. answer[i] == 'Buzz' if i is divisible by 5. answer[i] == i (as a string) if none of the above conditions are true.",
-        "starter_code": "def fizzBuzz(n):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def fizzBuzz(n):\n    # Your code here\n    pass",
+            "javascript": "function fizzBuzz(n) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 40,
         "test_criteria": "Input: 3 -> ['1','2','Fizz']. Input: 5 -> ['1','2','Fizz','4','Buzz'].Input: 15 -> ... 'FizzBuzz'."
     },
@@ -61,8 +73,11 @@ CHALLENGES = [
         "title": "Valid Parentheses",
         "difficulty": "Medium",
         "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid. Open brackets must be closed by the same type of brackets. Open brackets must be closed in the correct order.",
-        "starter_code": "def isValid(s):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def isValid(s):\n    # Your code here\n    pass",
+            "javascript": "function isValid(s) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 90,
         "test_criteria": "Input: '()' -> True. Input: '()[]{}' -> True. Input: '(]' -> False."
     },
@@ -71,8 +86,11 @@ CHALLENGES = [
         "title": "Climbing Stairs",
         "difficulty": "Easy",
         "description": "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
-        "starter_code": "def climbStairs(n):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def climbStairs(n):\n    # Your code here\n    pass",
+            "javascript": "function climbStairs(n) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 60,
         "test_criteria": "Input: 2 -> 2. Input: 3 -> 3. Input: 5 -> 8."
     },
@@ -81,8 +99,11 @@ CHALLENGES = [
         "title": "Merge Intervals",
         "difficulty": "Medium",
         "description": "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.",
-        "starter_code": "def merge(intervals):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def merge(intervals):\n    # Your code here\n    pass",
+            "javascript": "function merge(intervals) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 110,
         "test_criteria": "Input: [[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]. Input: [[1,4],[4,5]] -> [[1,5]]."
     },
@@ -91,8 +112,11 @@ CHALLENGES = [
         "title": "Longest Substring Without Repeats",
         "difficulty": "Hard",
         "description": "Given a string s, find the length of the longest substring without repeating characters.",
-        "starter_code": "def lengthOfLongestSubstring(s):\n    # Your code here\n    pass",
-        "language": "python",
+        "starter_code": {
+            "python": "def lengthOfLongestSubstring(s):\n    # Your code here\n    pass",
+            "javascript": "function lengthOfLongestSubstring(s) {\n    // Your code here\n}"
+        },
+        "supported_languages": ["python", "javascript"],
         "xp": 150,
         "test_criteria": "Input: 'abcabcbb' -> 3. Input: 'bbbbb' -> 1. Input: 'pwwkew' -> 3."
     }
