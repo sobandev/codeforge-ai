@@ -8,8 +8,11 @@ from database import get_db
 from models import User
 
 # Initialize Supabase Client (for admin tasks if needed, but mostly for verification)
-url: str = os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
-key: str = os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+url: str = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+
+if not url or not key:
+    print("WARNING: Supabase URL or Key not found in environment variables.")
 
 # For JWT verification, we need the JWT Secret if we were doing manual local verification.
 # However, Supabase-py client can also getUser from the token.
