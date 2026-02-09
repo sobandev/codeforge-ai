@@ -34,6 +34,7 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-neutral-900 mb-4">Product</h4>
                         <ul className="space-y-2 text-sm text-neutral-600">
+                            <li><Link href="/case-study" className="hover:text-amber-600">Case Study</Link></li>
                             <li><Link href="#features" className="hover:text-amber-600">Features</Link></li>
                             <li><Link href="#" className="hover:text-amber-600">Pricing</Link></li>
                             <li><Link href="#" className="hover:text-amber-600">Changelog</Link></li>
