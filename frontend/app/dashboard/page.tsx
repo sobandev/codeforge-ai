@@ -2,75 +2,49 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createClient } from "@/utils/supabase/client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, BookOpen, Plus, Sparkles } from "lucide-react"
 import { ProgressTracker } from "@/components/dashboard/progress-tracker"
 import { ConnectGithub } from "@/components/dashboard/connect-github"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { fetchUserSession } from "@/lib/features/auth/authSlice"
+import { fetchRoadmaps, fetchUserStats } from "@/lib/features/roadmap/roadmapSlice"
 import { progressService } from "@/services/progress"
 
 export default function DashboardPage() {
-    const supabase = createClient()
-    const [roadmaps, setRoadmaps] = useState<any[]>([])
-    const [stats, setStats] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState<any>(null)
+    const dispatch = useAppDispatch()
+    const { user, loading: authLoading } = useAppSelector((state) => state.auth)
+    const { list: roadmaps, loading: roadmapLoading, stats } = useAppSelector((state) => state.roadmap)
 
+    // Combined loading state
+    const loading = authLoading || roadmapLoading
+
+    // Cold Start Logic
     const [showColdStartMessage, setShowColdStartMessage] = useState(false)
 
     useEffect(() => {
-        const fetchData = async () => {
-            // Set a timer to show the "Cold Start" message if it takes too long
-            const timer = setTimeout(() => {
-                setShowColdStartMessage(true)
-            }, 3000) // Show after 3 seconds
+        // Cold Start Timer
+        const timer = setTimeout(() => {
+            setShowColdStartMessage(true)
+        }, 3000)
 
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
+        const init = async () => {
+            // 1. Fetch Session (Auth Slice)
+            const sessionAction = await dispatch(fetchUserSession())
 
-            if (user) {
-                let { data: { session } } = await supabase.auth.getSession()
-                let token = session?.access_token
-
-                // If user exists but no token (weird edge case), try to refresh
-                if (!token) {
-                    const { data: { session: refreshedSession } } = await supabase.auth.refreshSession()
-                    token = refreshedSession?.access_token
-                }
-
-                if (token) {
-                    try {
-                        // Fetch Roadmaps
-                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/roadmap/`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
-                        })
-                        if (res.ok) {
-                            const data = await res.json()
-                            setRoadmap(data)
-                        } else {
-                            if (res.status === 401) {
-                                // Token invalid, force logout or refresh?
-                                console.error("401 Unauthorized - Token might be expired")
-                            }
-                        }
-
-                        // Fetch Stats
-                        const statsData = await progressService.getUserStats()
-                        setStats(statsData)
-
-                    } catch (error) {
-                        console.error("Failed to fetch dashboard data", error)
-                    }
-                }
+            // 2. If Session exists, fetch Roadmaps & Stats (Roadmap Slice)
+            if (fetchUserSession.fulfilled.match(sessionAction) && sessionAction.payload) {
+                const token = sessionAction.payload.token
+                // We could dispatch these in parallel
+                dispatch(fetchRoadmaps(token))
+                dispatch(fetchUserStats())
             }
-            clearTimeout(timer)
-            setLoading(false)
         }
-        fetchData()
-    }, [])
+        init()
+
+        return () => clearTimeout(timer)
+    }, [dispatch])
 
     return (
         <div className="space-y-8">
@@ -116,7 +90,7 @@ export default function DashboardPage() {
                         </div>
                     )}
 
-                    {/* Roadmaps List (Existing Code) */}
+                    {/* Roadmaps List */}
                     {loading ? (
                         <div className="grid gap-4 md:grid-cols-2">
                             {[1, 2].map((i) => (
@@ -125,7 +99,7 @@ export default function DashboardPage() {
                         </div>
                     ) : roadmaps.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2">
-                            {roadmaps.map((roadmap) => (
+                            {roadmaps.map((roadmap: any) => (
                                 <Link href={`/dashboard/learn/${roadmap.id}`} key={roadmap.id}>
                                     <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-neutral-200 group">
                                         <CardHeader>
