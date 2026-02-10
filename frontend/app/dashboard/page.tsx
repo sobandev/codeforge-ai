@@ -30,27 +30,40 @@ export default function DashboardPage() {
             setUser(user)
 
             if (user) {
-                const { data: { session } } = await supabase.auth.getSession()
-                const token = session?.access_token
+                let { data: { session } } = await supabase.auth.getSession()
+                let token = session?.access_token
 
-                try {
-                    // Fetch Roadmaps
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/roadmap/`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
+                // If user exists but no token (weird edge case), try to refresh
+                if (!token) {
+                    const { data: { session: refreshedSession } } = await supabase.auth.refreshSession()
+                    token = refreshedSession?.access_token
+                }
+
+                if (token) {
+                    try {
+                        // Fetch Roadmaps
+                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/roadmap/`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        })
+                        if (res.ok) {
+                            const data = await res.json()
+                            setRoadmap(data)
+                        } else {
+                            if (res.status === 401) {
+                                // Token invalid, force logout or refresh?
+                                console.error("401 Unauthorized - Token might be expired")
+                            }
                         }
-                    })
-                    if (res.ok) {
-                        const data = await res.json()
-                        setRoadmap(data)
+
+                        // Fetch Stats
+                        const statsData = await progressService.getUserStats()
+                        setStats(statsData)
+
+                    } catch (error) {
+                        console.error("Failed to fetch dashboard data", error)
                     }
-
-                    // Fetch Stats
-                    const statsData = await progressService.getUserStats()
-                    setStats(statsData)
-
-                } catch (error) {
-                    console.error("Failed to fetch dashboard data", error)
                 }
             }
             clearTimeout(timer)
