@@ -30,17 +30,41 @@ export default function LearningStudio() {
 
     // Fetch Roadmap and Progress on Mount
     useEffect(() => {
-        if (roadmapId) {
-            // Fetch Roadmap
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-            fetch(`${apiUrl}/api/v1/roadmap/${roadmapId}`)
-                .then(res => res.json())
-                .then(data => setRoadmap(data))
-                .catch(err => console.error("Failed to fetch roadmap:", err))
+        const init = async () => {
+            if (roadmapId) {
+                const supabase = createClient()
+                const { data: { session } } = await supabase.auth.getSession()
+                const token = session?.access_token
 
-            // Fetch Progress
-            fetchProgress()
+                if (!token) {
+                    console.error("No auth token found, redirecting?")
+                    // potentially redirect to login
+                    return
+                }
+
+                const headers = {
+                    "Authorization": `Bearer ${token}`
+                }
+
+                // Fetch Roadmap
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                try {
+                    const res = await fetch(`${apiUrl}/api/v1/roadmap/${roadmapId}`, { headers })
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch roadmap: ${res.status}`)
+                    }
+                    const data = await res.json()
+                    setRoadmap(data)
+                } catch (err) {
+                    console.error("Failed to fetch roadmap:", err)
+                    setRoadmap(null) // Ensure it stays null on error
+                }
+
+                // Fetch Progress
+                fetchProgress()
+            }
         }
+        init()
     }, [roadmapId])
 
     const fetchProgress = async () => {
@@ -125,8 +149,8 @@ export default function LearningStudio() {
         }
     }
 
-    const currentModule = roadmap?.content?.roadmap[activeModuleIndex]
-    const currentTopic = currentModule?.topics[activeTopicIndex]
+    const currentModule = roadmap?.content?.roadmap?.[activeModuleIndex]
+    const currentTopic = currentModule?.topics?.[activeTopicIndex]
 
     // Fetch Lesson when topic changes
     useEffect(() => {
@@ -188,7 +212,22 @@ export default function LearningStudio() {
     if (!roadmap) {
         return (
             <div className="flex h-screen items-center justify-center bg-white">
-                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                    <p className="text-neutral-500">Loading your journey...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (!roadmap.content || !roadmap.content.roadmap) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-white">
+                <div className="text-center space-y-4">
+                    <p className="text-xl font-bold text-neutral-900">Roadmap Not Found</p>
+                    <p className="text-neutral-500">Could not load the curriculum data.</p>
+                    <Button onClick={() => window.location.reload()}>Retry</Button>
+                </div>
             </div>
         )
     }

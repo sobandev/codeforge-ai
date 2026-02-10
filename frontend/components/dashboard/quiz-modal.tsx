@@ -134,7 +134,7 @@ export function QuizModal({ isOpen, onClose, topic }: QuizModalProps) {
 
                 <div className="py-6">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center p-12 space-y-6">
+                        <div className="flex flex-col items-center justify-center p-12 space-y-6 focus:outline-none" tabIndex={0}>
                             <Loader2 className="h-10 w-10 animate-spin text-amber-400" />
                             <p className="text-neutral-500 font-medium">Consulting the AI Oracle...</p>
                         </div>

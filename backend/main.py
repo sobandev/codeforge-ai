@@ -27,12 +27,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://codeforgeai-alpha.vercel.app",
-        "https://codeforge-lszoi1yek-cyber-sage.vercel.app", # Previous deployment
-        "https://codeforge-mc0z0m3wl-cyber-sage.vercel.app", # Latest deployment
-        "https://codeforge-ni8dy3mj1-cyber-sage.vercel.app", # Recent deployment
-        "https://codeforge-np5ciqwx2-cyber-sage.vercel.app", # Most recent deployment
         "https://codeforge-ai.onrender.com"
     ],
+    allow_origin_regex="https://codeforge.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
