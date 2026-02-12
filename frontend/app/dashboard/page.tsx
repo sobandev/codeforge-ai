@@ -29,22 +29,23 @@ export default function DashboardPage() {
             setShowColdStartMessage(true)
         }, 3000)
 
-        const init = async () => {
-            // 1. Fetch Session (Auth Slice)
-            const sessionAction = await dispatch(fetchUserSession())
+        return () => clearTimeout(timer)
+    }, [])
 
-            // 2. If Session exists, fetch Roadmaps & Stats (Roadmap Slice)
-            if (fetchUserSession.fulfilled.match(sessionAction) && sessionAction.payload) {
-                const token = sessionAction.payload.token
-                // We could dispatch these in parallel
+    // React to Auth State Changes
+    const { token } = useAppSelector((state) => state.auth)
+
+    useEffect(() => {
+        if (token) {
+            // Only fetch if we don't have data yet to avoid spamming
+            if (roadmaps.length === 0) {
                 dispatch(fetchRoadmaps(token))
+            }
+            if (!stats) {
                 dispatch(fetchUserStats())
             }
         }
-        init()
-
-        return () => clearTimeout(timer)
-    }, [dispatch])
+    }, [token, roadmaps.length, stats, dispatch])
 
     return (
         <div className="space-y-8">
