@@ -52,22 +52,21 @@ def generate_roadmap(goal: str, current_skills: str = "", resume_text: str = "")
         return {"error": "GROQ_API_KEY not set. Please check your backend .env file."}
 
     template = """
-    You are an expert coding mentor. Create a detailed learning roadmap for a user with the following goal: {goal}.
+    You are an Expert Curriculum Designer and Mentor. Create a detailed learning roadmap for a user with the following goal: {goal}.
     
     Current skills/background: {current_skills}
     Resume Content (if provided): {resume_text}
     
     INSTRUCTIONS:
     1. Analyze the user's current skills and resume.
-    2. If the resume shows proficiency in a topic, either skip it or mark it as "Review/Advanced".
-    3. Focus the roadmap on filling the GAPS to reach the goal.
-    4. The roadmap should be broken down into weekly or thematic modules.
-    5. For each module, provide:
+    2. Focus the roadmap on filling the GAPS to reach the goal.
+    3. The roadmap should be broken down into weekly or thematic modules.
+    4. For each module, provide:
        - A title and brief description.
        - A list of specific topics/sub-skills.
-       - at least 2 FREE resources. IMPORTANT: Prefer "Official Documentation" (e.g., React Docs, MDN, Python.org) or highly stable YouTube channels (e.g., Traversy Media, FreeCodeCamp). *DO NOT* use random blog posts or deep links that might change.
-       - at least 1 PAID resource (Udemy/Coursera Course Landing Pages, O'Reilly Books).
-       - 1-2 PRACTICAL PROJECTS: Suggest a specific application to build that uses these skills (e.g., "Build a To-Do List", "Create a Weather App").
+       - at least 2 FREE resources. IMPORTANT: Prefer "Official Documentation/Sources" or high-quality video channels/articles.
+       - at least 1 PAID resource (Books, Courses).
+       - 1-2 PRACTICAL PROJECTS/EXERCISES: Suggest a specific task to practice these skills (e.g., "Write an Essay", "Build an App", "Solve a Problem Set").
     
     {format_instructions}
     """
@@ -120,7 +119,7 @@ def generate_quiz(topic: str, difficulty: str = "Beginner"):
         return {"error": "GROQ_API_KEY not set."}
 
     template = """
-    You are an expert coding mentor. Create a short multiple-choice quiz for the user to test their knowledge on: {topic}.
+    You are an expert tutor. Create a short multiple-choice quiz to test the user's knowledge on: {topic}.
     
     Difficulty Level: {difficulty}
     
@@ -165,22 +164,23 @@ def generate_lesson(topic: str, context: str = ""):
         return {"error": "GROQ_API_KEY not set."}
 
     template = """
-    You are an expert coding instructor. Create a comprehensive, deep-dive lesson for the topic: {topic}.
+    You are an expert instructor. Create a comprehensive, deep-dive lesson for the topic: {topic}.
     
     Context (Parent Module/Roadmap): {context}
     
     INSTRUCTIONS:
     1. **Structure**: 
        - **Introduction**: Briefly explain what {topic} is and why it matters.
-       - **Core Concept**: Deep explanation of how it works. Use analogies if helpful.
-       - **Code Implementation**: Provide realistic, copy-pasteable code snippets (Python, JS, etc.) with comments explaining each part.
+       - **Core Concept**: Deep explanation. Use analogies if helpful.
+       - **Examples/Implementation**: 
+         - IF the topic is technical (coding/math), provide code snippets or formulas.
+         - IF the topic is non-technical (history/english/soft-skills), provide essays, scenarios, or case studies.
        - **Common Pitfalls**: What mistakes do beginners often make?
-       - **Best Practices**: Professional tips for using this in production.
-       - **Challenge**: A small mini-task for the learner to try.
-       - **Job-Ready Project Idea**: Suggest a small feature or tool they can build RIGHT NOW using this specific topic to add to their portfolio.
+       - **Best Practices**: Professional tips.
+       - **Mini-Challenge**: A small task for the learner to try.
     
     2. **Tone**: Encouraging, professional, and clear.
-    3. **Formatting**: Return ONLY the Markdown content. Do not wrap it in JSON. Use headers, bold text, and code blocks.
+    3. **Formatting**: Return ONLY the Markdown content. Do not wrap it in JSON. Use headers, bold text, and code blocks where appropriate.
     """
     
     prompt = ChatPromptTemplate.from_template(template)
