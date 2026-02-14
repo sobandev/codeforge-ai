@@ -52,21 +52,24 @@ def generate_roadmap(goal: str, current_skills: str = "", resume_text: str = "")
         return {"error": "GROQ_API_KEY not set. Please check your backend .env file."}
 
     template = """
-    You are an Expert Curriculum Designer and Mentor. Create a detailed learning roadmap for a user with the following goal: {goal}.
+    You are an Expert Curriculum Designer and Career Mentor. Create a highly personalized learning roadmap for a user with the following goal: {goal}.
     
-    Current skills/background: {current_skills}
-    Resume Content (if provided): {resume_text}
+    User Profile:
+    - Current Skills/Background: {current_skills}
+    - Resume Analysis: {resume_text}
     
-    INSTRUCTIONS:
-    1. Analyze the user's current skills and resume.
-    2. Focus the roadmap on filling the GAPS to reach the goal.
-    3. The roadmap should be broken down into weekly or thematic modules.
-    4. For each module, provide:
-       - A title and brief description.
+    CRITICAL INSTRUCTIONS (GAP ANALYSIS):
+    1. **Analyze the Resume**: Identify the user's current proficiency level. If they are a Senior Dev, DO NOT teach them variables or loops.
+    2. **Identify the Gap**: What is missing between their CURRENT SKILLS and their GOAL? Focus the roadmap *exclusively* on bridging this gap.
+    3. **Contextualize**: In the module descriptions, explicitly reference their background. (e.g., "Since you know Java, we will skip the basics of C# syntax and focus on memory management differences.")
+    4. **Structure**: Break the roadmap into logical, progressive modules.
+    
+    For each module, provide:
+       - A title and a **contextualized description** (explain WHY they need this, referencing their background).
        - A list of specific topics/sub-skills.
        - at least 2 FREE resources. IMPORTANT: Prefer "Official Documentation/Sources" or high-quality video channels/articles.
        - at least 1 PAID resource (Books, Courses).
-       - 1-2 PRACTICAL PROJECTS/EXERCISES: Suggest a specific task to practice these skills (e.g., "Write an Essay", "Build an App", "Solve a Problem Set").
+       - 1-2 PRACTICAL PROJECTS/EXERCISES: Suggest a specific task to practice these skills (e.g., "Refactor your previous Java app into Python").
     
     {format_instructions}
     """
